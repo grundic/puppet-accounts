@@ -1,4 +1,4 @@
-##Accounts
+Accounts
 ========
 
 [![Build Status](https://travis-ci.org/camptocamp/puppet-accounts.png?branch=master)](https://travis-ci.org/camptocamp/puppet-accounts)
