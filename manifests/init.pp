@@ -8,8 +8,10 @@ class accounts(
   $start_uid               = undef,
   $start_gid               = undef,
   $ssh_authorized_key_title = '%{ssh_key}-on-%{account}',
+  $dotfiles                 = {}
 ) {
   include ::accounts::config
+
 
   create_resources(group, $groups)
 

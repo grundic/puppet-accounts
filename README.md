@@ -1,4 +1,4 @@
-Accounts
+##Accounts
 ========
 
 [![Build Status](https://travis-ci.org/camptocamp/puppet-accounts.png?branch=master)](https://travis-ci.org/camptocamp/puppet-accounts)
@@ -14,12 +14,30 @@ class { 'accounts':
   usergroups               => hiera_hash('accounts::usergroups', {}),
   accounts                 => hiera_hash('accounts::accounts', {}),
   ssh_authorized_key_title => '%{ssh_keys[\'%{ssh_key}\'][\'comment\'] on %{user}',
+  dotfiles                 => hiera_hash('accounts::dotfiles', {}),
 }
 ```
 
 ### common.yaml
 ```
 ---
+accounts::dotfiles:
+  simple:
+    path: .simple
+    source: /etc/lsb-release
+  complex:
+    path: dir1/dir2/file.txt
+    content: "This is sample dotfile content\n"
+  complex2:
+    path: dir1/dir2/file2.txt
+    content: "File in the same folder\n"
+    mode: "660"
+  do_not_require_home:
+    path: some-file.txt
+    content: "This file will be created on second puppet run, after user home fact will be available\n" 
+    group: users
+    require_user: false
+
 accounts::ssh_keys:
   foo:
     comment: foo@example.com
@@ -61,6 +79,10 @@ accounts::accounts:
       - foo
       - bar
       - baz
+    dotfiles:
+      - simple
+      - complex
+      - complex2
   bar:
     groups:
       - foo
@@ -68,6 +90,9 @@ accounts::accounts:
       - baz
     authorized_keys:
       - bar
+    dotfiles:
+      - complex2
+      - "do_not_require_home"
   @foo:
     groups:
       - qux

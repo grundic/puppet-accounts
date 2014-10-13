@@ -6,6 +6,7 @@ define accounts::account(
   $authorized_keys          = [],
   $authorized_keys_target   = undef,
   $ssh_authorized_key_title = $::accounts::ssh_authorized_key_title,
+  $dotfiles                 = [],
 ) {
   if $user =~ /^@(\S+)$/ {
     if ! has_key($::accounts::usergroups, $1) {
@@ -81,6 +82,18 @@ define accounts::account(
         # TODO: Fix unless so that it replaces the key
         exec { "/bin/echo '${::accounts::ssh_keys[$name]['private']}' > ~${user}/.ssh/id_rsa":
           unless => "/usr/bin/test -f ~${user}/.ssh/id_rsa",
+        }
+      }
+
+      # dotfiles configuration
+      if is_string($dotfiles) or is_array($dotfiles) {
+        $_dotfiles  = suffix(
+          unique( delete_undef_values( flatten( [$dotfiles, $name] ) ) ),
+          "-on-${name}"
+        )
+
+        accounts::dotfile { $_dotfiles:
+          account                  => $name,
         }
       }
     }
